@@ -1,0 +1,68 @@
+version: '3.9'
+
+services:
+
+
+  rabbitmq-server:
+    image: "rabbitmq:3-management"
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - 'sample-rabbitmq-data:/data'
+    networks:
+      - sample-net
+
+
+  producer:
+    build: .
+    depends_on:
+      - rabbitmq-server
+    restart: on-failure
+    environment:
+      INTERVAL: 0.1
+      BASE_PATH: producer
+      RABBITMQ_USERNAME: guest
+      RABBITMQ_PASSSWORD: guest
+      RABBITMQ_HOST: rabbitmq-server
+      RABBITMQ_QUEUE: dataqueue
+      RABBITMQ_ROUTING_KEY: dataqueue 
+      RABBITMQ_EXCHANGE: exchange_test
+    networks:
+      - sample-net
+    volumes:
+      - type: bind
+        source: ./producer
+        target: /app
+
+
+  consumer:
+    build: .
+    deploy:
+      replicas: 3
+    depends_on:
+      - rabbitmq-server
+    restart: on-failure      
+    environment:
+      INTERVAL: 0.5,1
+      BASE_PATH: consumer
+      RABBITMQ_USERNAME: guest
+      RABBITMQ_PASSSWORD: guest
+      RABBITMQ_HOST: rabbitmq-server
+      RABBITMQ_QUEUE: dataqueue
+      RABBITMQ_ROUTING_KEY: dataqueue 
+      RABBITMQ_EXCHANGE: exchange_test
+    networks:
+      - sample-net
+    volumes:
+      - type: bind
+        source: ./consumer
+        target: /app
+
+networks:
+  sample-net:
+    driver: bridge
+
+volumes:
+  sample-rabbitmq-data:      
+    driver: local
