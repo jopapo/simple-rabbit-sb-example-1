@@ -33,7 +33,7 @@ class RabbitMQServer():
         parameters = pika.ConnectionParameters(host, port=port, credentials=credentials)
         self._connection = pika.BlockingConnection(parameters)
         self._channel = self._connection.channel()
-        self._channel.basic_qos(prefetch_size=self._prefetch)
+        self._channel.basic_qos(prefetch_count=self._prefetch)
 
     def create_exchange(self):
         self._channel.exchange_declare(
