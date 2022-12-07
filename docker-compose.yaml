@@ -2,7 +2,6 @@ version: '3.9'
 
 services:
 
-
   rabbitmq-server:
     image: "rabbitmq:3-management"
     ports:
@@ -14,49 +13,52 @@ services:
       - sample-net
 
 
+  # test-1:
+  #   image: tianon/true
+  #   depends_on: ["producer-1", "consumer-1"]
+
   producer:
     build: .
-    depends_on:
-      - rabbitmq-server
+    command: producer.py
+    # depends_on:
+    #   - rabbitmq-server
     restart: on-failure
     environment:
       INTERVAL: 0.1
-      BASE_PATH: producer
+      PREFIX: poffo
+      BROKER_QUEUE: poffo_dataqueue_test
+      BROKER_EXCHANGE: poffo_exchange_test
       RABBITMQ_USERNAME: guest
       RABBITMQ_PASSSWORD: guest
       RABBITMQ_HOST: rabbitmq-server
-      RABBITMQ_QUEUE: dataqueue
-      RABBITMQ_ROUTING_KEY: dataqueue 
-      RABBITMQ_EXCHANGE: exchange_test
     networks:
       - sample-net
     volumes:
       - type: bind
-        source: ./producer
+        source: ./app
         target: /app
 
 
   consumer:
     build: .
+    command: consumer.py
     deploy:
       replicas: 3
-    depends_on:
-      - rabbitmq-server
-    restart: on-failure      
+    # depends_on:
+    #   - rabbitmq-server
+    restart: on-failure  
     environment:
       INTERVAL: 0.5,1
-      BASE_PATH: consumer
+      BROKER_QUEUE: poffo_dataqueue_test
+      BROKER_EXCHANGE: poffo_exchange_test
       RABBITMQ_USERNAME: guest
       RABBITMQ_PASSSWORD: guest
       RABBITMQ_HOST: rabbitmq-server
-      RABBITMQ_QUEUE: dataqueue
-      RABBITMQ_ROUTING_KEY: dataqueue 
-      RABBITMQ_EXCHANGE: exchange_test
     networks:
       - sample-net
     volumes:
       - type: bind
-        source: ./consumer
+        source: ./app
         target: /app
 
 networks:
