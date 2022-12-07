@@ -62,6 +62,27 @@ services:
         source: ./app
         target: /app
 
+  consumer-rb-extra:
+    build: .
+    command: consumer.py
+    depends_on:
+      - rabbitmq-server
+    restart: on-failure  
+    environment:
+      INTERVAL: 0.5,1
+      BROKER_QUEUE: poffo_dataqueue_test_2
+      BROKER_EXCHANGE: poffo_exchange_test
+      RABBITMQ_USERNAME: guest
+      RABBITMQ_PASSSWORD: guest
+      RABBITMQ_HOST: rabbitmq-server
+      PREFETCH: 10
+    networks:
+      - sample-net
+    volumes:
+      - type: bind
+        source: ./app
+        target: /app
+
   producer-sb:
     build: .
     command: producer.py
@@ -92,6 +113,27 @@ services:
     environment:
       INTERVAL: 0.5,1
       BROKER_QUEUE: poffo_datasub_test
+      BROKER_EXCHANGE: poffo_exchange_test
+      RABBITMQ_USERNAME: guest
+      RABBITMQ_PASSSWORD: guest
+      RABBITMQ_HOST: rabbitmq-server
+      PREFETCH: 10
+    networks:
+      - sample-net
+    volumes:
+      - type: bind
+        source: ./app
+        target: /app
+
+  consumer-sb-extra:
+    build: .
+    command: consumer.py
+    restart: on-failure  
+    env_file:
+      - sb.env
+    environment:
+      INTERVAL: 0.5,1
+      BROKER_QUEUE: poffo_datasub_test_2
       BROKER_EXCHANGE: poffo_exchange_test
       RABBITMQ_USERNAME: guest
       RABBITMQ_PASSSWORD: guest
