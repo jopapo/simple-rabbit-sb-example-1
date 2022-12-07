@@ -17,11 +17,11 @@ services:
   #   image: tianon/true
   #   depends_on: ["producer-1", "consumer-1"]
 
-  producer:
+  producer-rb:
     build: .
     command: producer.py
-    # depends_on:
-    #   - rabbitmq-server
+    depends_on:
+      - rabbitmq-server
     restart: on-failure
     environment:
       INTERVAL: 0.1
@@ -39,13 +39,13 @@ services:
         target: /app
 
 
-  consumer:
+  consumer-rb:
     build: .
     command: consumer.py
     deploy:
       replicas: 3
-    # depends_on:
-    #   - rabbitmq-server
+    depends_on:
+      - rabbitmq-server
     restart: on-failure  
     environment:
       INTERVAL: 0.5,1
@@ -54,6 +54,49 @@ services:
       RABBITMQ_USERNAME: guest
       RABBITMQ_PASSSWORD: guest
       RABBITMQ_HOST: rabbitmq-server
+      PREFETCH: 10
+    networks:
+      - sample-net
+    volumes:
+      - type: bind
+        source: ./app
+        target: /app
+
+  producer-sb:
+    build: .
+    command: producer.py
+    restart: on-failure
+    env_file:
+      - sb.env
+    environment:
+      INTERVAL: 0.1
+      PREFIX: poffo
+      BROKER_QUEUE: poffo_datasub_test
+      BROKER_EXCHANGE: poffo_exchange_test
+    networks:
+      - sample-net
+    volumes:
+      - type: bind
+        source: ./app
+        target: /app
+
+
+  consumer-sb:
+    build: .
+    command: consumer.py
+    deploy:
+      replicas: 3
+    restart: on-failure  
+    env_file:
+      - sb.env
+    environment:
+      INTERVAL: 0.5,1
+      BROKER_QUEUE: poffo_datasub_test
+      BROKER_EXCHANGE: poffo_exchange_test
+      RABBITMQ_USERNAME: guest
+      RABBITMQ_PASSSWORD: guest
+      RABBITMQ_HOST: rabbitmq-server
+      PREFETCH: 10
     networks:
       - sample-net
     volumes:

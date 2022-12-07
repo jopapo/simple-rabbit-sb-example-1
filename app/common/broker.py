@@ -8,13 +8,14 @@ from common.configs import EnvironmentVariables
 class BrokerAdapter():
 
     def __init__(self):
-        SB_CONN = EnvironmentVariables.SERVICE_BUS_CONNECTION_STRING.get_env()
-        if SB_CONN:
+        sb_conn = EnvironmentVariables.SERVICE_BUS_CONNECTION_STRING.get_env()
+        if sb_conn:
             logging.info("Connecting to Service Bus...")
             self.broker = ServiceBus(
-                connections_tring = SB_CONN,
+                connection_string = sb_conn,
                 queue=EnvironmentVariables.BROKER_QUEUE.get_env(),
-                exchange=EnvironmentVariables.BROKER_EXCHANGE.get_env()
+                exchange=EnvironmentVariables.BROKER_EXCHANGE.get_env(),
+                prefetch=int(EnvironmentVariables.PREFETCH.get_env() or 0)
                 )
         else:
             logging.info("Connecting to RabbitMQ...")
@@ -24,6 +25,7 @@ class BrokerAdapter():
                 username=EnvironmentVariables.RABBITMQ_USERNAME.get_env(),
                 password=EnvironmentVariables.RABBITMQ_PASSSWORD.get_env(),
                 exchange=EnvironmentVariables.BROKER_EXCHANGE.get_env(),
+                prefetch=int(EnvironmentVariables.PREFETCH.get_env() or 0)
                 )
 
     def get_messages(self, callback):

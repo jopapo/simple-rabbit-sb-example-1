@@ -15,7 +15,7 @@ Uso para rabbit:
 
 ```bash
 docker-compose -d up rabbitmq-server
-docker-compose up producer consumer
+docker-compose up producer-rb consumer-rb
 ```
 
 Uso para SB:
@@ -23,7 +23,7 @@ Uso para SB:
 1. Colocar String Connection do SAS do SB em SB.env com a key SERVICE_BUS_CONNECTION_STRING;
 2. Executar
 ```bash
-docker-compose --env-file SB.env up producer consumer 
+docker-compose up producer-sb consumer-sb
 ```
 
 # Referencias

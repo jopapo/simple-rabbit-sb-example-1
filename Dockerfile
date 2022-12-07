@@ -12,8 +12,8 @@ RUN mkdir /app
 WORKDIR /app
 
 # Install dependencies
-COPY requirements.txt /tmp/
-RUN pip install --upgrade pip && pip install -r /tmp/requirements.txt
+COPY requirements.txt .
+RUN pip install --upgrade pip && pip install -r requirements.txt
 
 # Copy our source code
 COPY app/ ./

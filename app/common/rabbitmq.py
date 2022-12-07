@@ -9,13 +9,14 @@ class RabbitMQServer():
     connection and channel interactions with RabbitMQ.
     """
 
-    def __init__(self, queue, host, username, password, exchange=''):
+    def __init__(self, queue, host, username, password, exchange, prefetch):
         self._queue = queue
         self._host = host
         self._routing_key = 'example_routing_key'
         self._exchange = exchange
         self._username = username
         self._password = password
+        self._prefetch = prefetch
         self.start_server()
 
     def start_server(self):
@@ -32,6 +33,7 @@ class RabbitMQServer():
         parameters = pika.ConnectionParameters(host, port=port, credentials=credentials)
         self._connection = pika.BlockingConnection(parameters)
         self._channel = self._connection.channel()
+        self._channel.basic_qos(prefetch_size=self._prefetch)
 
     def create_exchange(self):
         self._channel.exchange_declare(
@@ -57,7 +59,7 @@ class RabbitMQServer():
             self._channel.basic_consume(
                 queue=self._queue,
                 on_message_callback=callback,
-                auto_ack=True
+                auto_ack=False
             )
             self._channel.start_consuming()
         except Exception as e:
