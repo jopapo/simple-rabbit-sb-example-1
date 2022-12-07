@@ -1,6 +1,6 @@
 import time, json, logging
 
-from azure.servicebus import ServiceBusClient, ServiceBusMessage
+from azure.servicebus import ServiceBusClient, ServiceBusMessage, AutoLockRenewer
 from azure.servicebus.management import ServiceBusAdministrationClient
 from azure.core.exceptions import ResourceExistsError
 
@@ -43,13 +43,15 @@ class ServiceBus():
 
 
     def get_messages(self, callback):
-        with self._server.get_subscription_receiver(topic_name=self._exchange, subscription_name=self._queue, max_wait_time=300, prefetch_count=self._prefetch) as receiver:
-            while True:
-                received_msgs = receiver.receive_messages(max_message_count=self._prefetch, max_wait_time=5)
-                for msg in received_msgs:
-                    callback(msg)
-                    receiver.complete_message(msg)
-                time.sleep(1) # Espera 1 segundo se estiver com fila vazia
+        with AutoLockRenewer() as renewer:
+            with self._server.get_subscription_receiver(topic_name=self._exchange, subscription_name=self._queue, max_wait_time=300, prefetch_count=self._prefetch) as receiver:
+                while True:
+                    received_msgs = receiver.receive_messages(max_message_count=self._prefetch, max_wait_time=5)
+                    for msg in received_msgs:
+                        renewer.register(receiver, msg, max_lock_renewal_duration=60)
+                        callback(msg)
+                        receiver.complete_message(msg)
+                    time.sleep(1) # Espera 1 segundo se estiver com fila vazia
 
 
     def publish(self, message={}):
