@@ -21,7 +21,7 @@ docker-compose up producer-rb consumer-rb
 
 Uso para SB:
 
-1. Colocar String Connection do SAS do SB em SB.env com a key SERVICE_BUS_CONNECTION_STRING;
+1. Colocar String Connection do SAS do SB em sb.env com a key SERVICE_BUS_CONNECTION_STRING;
 1. Executar
 ```bash
 docker-compose up producer-sb consumer-sb
