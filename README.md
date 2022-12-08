@@ -1,15 +1,16 @@
-# simple-rabbit-sb-example-1
-Simple RabbitMQ/ServiceBus test case
+# Resumo
+
+Teste simples de mensageria com modelo para RabbitMQ e ServiceBus.
 
 # Pré-requisitos
 
-1. Um servidor service bus (tem q ser manual)
-
-Obs: De preferência com capacidades equivalentes.
+1. Um servidor service bus (tem q ser manual) e a connection string
+1. Um ambiente python (testado com 3.8)
+1. Um orquestrador docker (testado com [Rancher Desktop](https://rancherdesktop.io/))
 
 # Teste 1 - 1P3Ci
 
-1 produtor numa exchange que direciona pra 1 queue que é lida por 3 consumers com mensagens únicas (o produtor tem um sleep de 0.1s e o consumidor é aleatório entre 0,5 e 1s).
+Um produtor numa exchange que direciona pra 1 queue que é lida por 3 consumers com mensagens únicas (o produtor tem um sleep de 0.1s e o consumidor é aleatório entre 0,5 e 1s).
 
 Uso para rabbit:
 
@@ -21,12 +22,12 @@ docker-compose up producer-rb consumer-rb
 Uso para SB:
 
 1. Colocar String Connection do SAS do SB em SB.env com a key SERVICE_BUS_CONNECTION_STRING;
-2. Executar
+1. Executar
 ```bash
 docker-compose up producer-sb consumer-sb
 ```
 
-# Teste 2 - 1P3Cc
+# Teste 2 - 1P2Cc
 
 Similar ao anterior com a diferença que os consumidores recebem mensagens replicadas (tópico/exchange).
 
