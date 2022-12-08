@@ -48,3 +48,4 @@ docker-compose up producer-sb consumer-sb consumer-sb-extra
 https://github.com/FernandoBLima/python-rabbitmq-docker
 https://github.com/bitnami/charts/tree/main/bitnami/rabbitmq
 https://pypi.org/project/azure-servicebus/
+https://github.com/Azure/azure-sdk-for-python/tree/azure-servicebus_7.8.1/sdk/servicebus/azure-servicebus/samples/sync_samples
