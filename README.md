@@ -15,7 +15,7 @@ Um produtor numa exchange que direciona pra 1 queue que é lida por 3 consumers 
 Uso para rabbit:
 
 ```bash
-docker-compose -d up rabbitmq-server
+docker-compose up -d rabbitmq-server
 docker-compose up producer-rb consumer-rb
 ```
 
@@ -34,7 +34,7 @@ Similar ao anterior com a diferença que os consumidores recebem mensagens repli
 * Recomendado: Diminuir o scale dos consumers pra 1.
 
 ```bash
-docker-compose -d up rabbitmq-server
+docker-compose up -d rabbitmq-server
 docker-compose up producer-rb consumer-rb consumer-rb-extra
 ```
 
